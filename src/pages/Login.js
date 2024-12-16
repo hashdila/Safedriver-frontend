@@ -14,15 +14,12 @@ function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await login(formData.email, formData.password);
-            navigate("/driverhome");
-            alert(response); // Handle success
-
+            await login(formData.email, formData.password); // Call login function
+            navigate("/driverhome"); // Navigate to the driver home page
         } catch (error) {
-            alert("Error: " + error.response.data); // Handle error
+            console.error("Login failed:", error); // Optionally log the error for debugging
         }
     };
-
     const handleSwitchToRegister = () => {
         navigate("/register"); // Navigate to Register page
     };
