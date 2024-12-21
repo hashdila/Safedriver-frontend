@@ -15,6 +15,7 @@ function App() {
         <Routes>
            {/* Default route to Register */}
             <Route path="/" element={<Home />} />
+            <Route path="/home" element={<Home />} />
           <Route path="/register" element={<Registration />} />
           <Route path="/login" element={<Login />} />
           <Route path="/driverhome" element={<DriverHome/>} />
