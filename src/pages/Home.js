@@ -1,54 +1,27 @@
 import React, { useState } from "react"; // Import useState
 import { useNavigate } from "react-router-dom"; // Import useNavigate
-import Navbar from "../components/navbar";
-import Footer from "../components/footer";
+import Navbar from "../components/navbar";  // If Navbar is being used
+import Footer from "../components/footer";  // If Footer is being used
 
 function Home() {
     const navigate = useNavigate();
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-    const handleSwitchToLogin = (role) => {
-        if (role === "driver") {
-            navigate("/login?role=driver"); // Navigate to Driver login
-        } else if (role === "customer") {
-            navigate("/login?role=customer"); // Navigate to Customer login
-        }
-    };
-
-    const toggleDropdown = () => {
-        setIsDropdownOpen((prev) => !prev);
+    const handleSwitchToRegister = () => {
+        navigate("/login"); // Navigate to Login page (or Register if needed)
     };
 
     return (
         <div className="min-h-screen bg-gray-100">
             {/* Header Section */}
-            <header className="bg-white text-plack py-4 px-6 flex justify-between items-center shadow-md">
+            <header className="bg-white text-black py-4 px-6 flex justify-between items-center shadow-md">
                 <h1 className="text-2xl font-bold">Safe Drive</h1>
                 <div className="relative">
                     <button
-                        onClick={toggleDropdown}
+                        onClick={handleSwitchToRegister}  // Corrected to handleSwitchToRegister
                         className="bg-white text-black px-4 py-2 rounded-md shadow hover:bg-gray-100"
                     >
                         Login
                     </button>
-                    {isDropdownOpen && (
-                        <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg">
-                            <ul className="text-left text-black">
-                                <li
-                                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                                    onClick={() => handleSwitchToLogin("driver")}
-                                >
-                                    Driver
-                                </li>
-                                <li
-                                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                                    onClick={() => handleSwitchToLogin("customer")}
-                                >
-                                    Customer
-                                </li>
-                            </ul>
-                        </div>
-                    )}
                 </div>
             </header>
 

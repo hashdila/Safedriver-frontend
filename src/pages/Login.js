@@ -1,10 +1,37 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
-import { login } from "../services/auth";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
     const [formData, setFormData] = useState({ email: "", password: "" });
-    const navigate = useNavigate();  // Get navigate function
+    const [user, setUser] = useState(null); // Initialize user state here
+    const navigate = useNavigate(); // Get navigate function
+
+    const handleLogin = async (loginRequest) => {
+        try {
+            const response = await fetch('http://localhost:8080/api/user/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(loginRequest),
+            });
+
+            if (response.ok) {
+                const user = await response.json();
+                // Save user data in localStorage or state
+                localStorage.setItem('user', JSON.stringify(user));
+                setUser(user); // Set the user state
+
+                // Navigate and then refresh the page
+                navigate("/homelogged");
+                setTimeout(() => {
+                    window.location.reload(); // Refresh the page to reflect new state
+                }, 0);
+            } else {
+                console.error("Login failed:", await response.text());
+            }
+        } catch (error) {
+            console.error("Error during login:", error);
+        }
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -13,13 +40,9 @@ function Login() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            await login(formData.email, formData.password); // Call login function
-            navigate("/driverhome"); // Navigate to the driver home page
-        } catch (error) {
-            console.error("Login failed:", error); // Optionally log the error for debugging
-        }
+        handleLogin(formData); // Call the handleLogin function when submitting the form
     };
+
     const handleSwitchToRegister = () => {
         navigate("/register"); // Navigate to Register page
     };
