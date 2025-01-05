@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet"; // Import the necessary modules
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
+import React, { useEffect, useState } from "react";
 import Navbar from "../components/navbar";
+import Footer from "../components/footer";
+import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import L from "leaflet";
 
-// Fix Leaflet icons issue
+// Add custom icons to avoid default Leaflet marker icon issue
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
@@ -12,34 +12,41 @@ L.Icon.Default.mergeOptions({
     shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
 });
 
+// LocationPicker component to capture the click event on the map
 const LocationPicker = ({ setLocation }) => {
-    const [markerPosition, setMarkerPosition] = useState(null);
-
     useMapEvents({
         click: (e) => {
             const { lat, lng } = e.latlng;
-            setMarkerPosition([lat, lng]);
-            setLocation({ latitude: lat, longitude: lng }); // Update location state with the new lat and lng
+            setLocation({ latitude: lat, longitude: lng });
         },
     });
 
-    return markerPosition ? <Marker position={markerPosition} /> : null; // Render the marker when position is set
+    return null; // This component does not render anything directly
 };
 
-const HomeLogged = ({ view, user }) => {
+const Driverhome = () => {
+    const [view, setView] = useState("driver");  // Define the view state
+    const [user, setUser] = useState(null);
     const [driverDetails, setDriverDetails] = useState(null);
     const [frontImage, setFrontImage] = useState(null);
     const [backImage, setBackImage] = useState(null);
-    const [location, setLocation] = useState({ latitude: 0, longitude: 0 }); // Initialize location with default values
+    const [location, setLocation] = useState({ latitude: 0, longitude: 0 });
 
     useEffect(() => {
-        if (view === "driver") {
+        const userData = localStorage.getItem('user');
+        if (userData) {
+            setUser(JSON.parse(userData));
+        }
+    }, []);
+
+    useEffect(() => {
+        if (user && user.email && view === "driver") {
             fetch("http://localhost:8080/api/driver-details")
                 .then((response) => response.json())
                 .then((data) => setDriverDetails(data))
                 .catch((error) => console.error("Error fetching driver details:", error));
         }
-    }, [view]);
+    }, [user, view]);
 
     const handleFileChange = (e) => {
         const { name, files } = e.target;
@@ -50,12 +57,18 @@ const HomeLogged = ({ view, user }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (!user || !user.email) {
+            console.error("User data is missing or email is not available");
+            alert("User data is missing or email is not available");
+            return;
+        }
+
         const formData = new FormData();
-        formData.append("email", user.email); // Add user's email
+        formData.append("email", user.email);
         formData.append("frontImage", frontImage);
         formData.append("backImage", backImage);
-        formData.append("latitude", location.latitude); // Send location latitude
-        formData.append("longitude", location.longitude); // Send location longitude
+        formData.append("latitude", location.latitude);
+        formData.append("longitude", location.longitude);
 
         try {
             const response = await fetch("http://localhost:8080/api/user/verify", {
@@ -75,8 +88,9 @@ const HomeLogged = ({ view, user }) => {
     };
 
     return (
-        <div className="p-4">
-            {view === "driver" ? (
+        <div>
+            <Navbar />
+            <div className="p-4">
                 <div>
                     <h2 className="text-xl font-bold">Driver Dashboard</h2>
                     {driverDetails && driverDetails.isVerified ? (
@@ -94,14 +108,15 @@ const HomeLogged = ({ view, user }) => {
                             <div className="my-4">
                                 <h3>Select Your Location on the Map:</h3>
                                 <MapContainer
-                                    center={[location.latitude || 7.8731, location.longitude || 80.7718]} // Ensure fallback location if undefined
+                                    center={[location.latitude || 7.8731, location.longitude || 80.7718]} // Default location
                                     zoom={7}
                                     style={{ height: "300px", width: "100%" }}
                                 >
-                                    <TileLayer
-                                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                                    />
+                                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                                     <LocationPicker setLocation={setLocation} />
+                                    {location.latitude && location.longitude && (
+                                        <Marker position={[location.latitude, location.longitude]} />
+                                    )}
                                 </MapContainer>
                                 {location.latitude && location.longitude && (
                                     <p>
@@ -115,11 +130,10 @@ const HomeLogged = ({ view, user }) => {
                         </form>
                     )}
                 </div>
-            ) : (
-                <p>Loading...</p>
-            )}
+            </div>
+            <Footer />
         </div>
     );
 };
 
-export default HomeLogged;
+export default Driverhome;

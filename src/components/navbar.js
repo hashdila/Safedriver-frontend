@@ -1,52 +1,80 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
-const Navbar = ({ user, onLogout, onViewSwitch, isDriver }) => {
-    const [dropdownOpen, setDropdownOpen] = useState(false);
+const Navbar = () => {
+    const [loggedIn, setLoggedIn] = useState(false); // Track login state
+    const [driver, setDriver] = useState(null); // Store driver data
+    const navigate = useNavigate(); // Use navigate for redirection
 
-    if (!user) return null; // Hide Navbar if no user is logged in
+    useEffect(() => {
+        // Check if user is logged in by checking localStorage
+        const userData = localStorage.getItem('user');
+        if (userData) {
+            const user = JSON.parse(userData);
+            setDriver(user); // Set user data from localStorage
+            setLoggedIn(true); // Update login state
+        }
+    }, []);
 
-    const handleSwitchView = () => {
-        onViewSwitch(isDriver ? "customer" : "driver");
+    const handleLogout = () => {
+        // Clear user data from localStorage
+        localStorage.removeItem('user');
+        setLoggedIn(false); // Update the login state to false
+        setDriver(null); // Clear the driver data
+
+        // Navigate to the home page or login page
+        navigate("/"); // Redirect to the home page
+    };
+
+    const navigateToDriverPage = () => {
+        navigate("/driverhome"); // Redirect to the driver-specific page
+    };
+
+    const navigateToCustomerPage = () => {
+        navigate("/customerhome"); // Redirect to the customer-specific page
     };
 
     return (
-        <nav className="bg-blue-600 text-white">
-            <div className="flex justify-between items-center p-4">
-                <a href="/" className="text-2xl font-bold">
-                    Safe Drive
-                </a>
+        <nav className="bg-blue-600 p-4 flex justify-between items-center">
+            <div className="text-white font-bold text-xl">Safe Drive</div>
+
+            {loggedIn && driver ? (
                 <div className="flex items-center space-x-4">
-                    <button
-                        onClick={handleSwitchView}
-                        className="bg-white text-blue-600 px-4 py-2 rounded-md"
-                    >
-                        Switch to {isDriver ? "Customer" : "Driver"}
-                    </button>
-                    <div className="relative">
+                    <div className="text-white">{driver.name}</div>
+                    <img
+                        src={driver.imageUrl || 'https://via.placeholder.com/150'} // Use a placeholder if imageUrl is not available
+                        alt="Profile"
+                        className="w-10 h-10 rounded-full border-2 border-white"
+                    />
+                    <div className="flex space-x-4">
+                        {/* Conditionally render buttons for driver and customer */}
                         <button
-                            onClick={() => setDropdownOpen(!dropdownOpen)}
-                            className="flex items-center space-x-2 focus:outline-none"
+                            onClick={navigateToDriverPage}
+                            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
                         >
-                            <img
-                                src={user.image || "default_image_url.jpg"}
-                                alt="User Profile"
-                                className="w-8 h-8 rounded-full"
-                            />
-                            <span className="hidden md:inline-block">{user.name}</span>
+                            Driver
                         </button>
-                        {dropdownOpen && (
-                            <div className="absolute right-0 mt-2 bg-white text-black rounded-lg shadow-lg w-32">
-                                <button
-                                    onClick={onLogout}
-                                    className="block w-full px-4 py-2 text-left hover:bg-blue-100"
-                                >
-                                    Logout
-                                </button>
-                            </div>
-                        )}
+                        <button
+                            onClick={navigateToCustomerPage}
+                            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                        >
+                            Customer
+                        </button>
                     </div>
+                    <button
+                        onClick={handleLogout}
+                        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                    >
+                        Logout
+                    </button>
                 </div>
-            </div>
+            ) : (
+                <div className="text-white">
+                    <button className="px-4 py-2 rounded bg-green-500 hover:bg-green-600 text-white">
+                        Login
+                    </button>
+                </div>
+            )}
         </nav>
     );
 };

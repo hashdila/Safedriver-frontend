@@ -5,22 +5,18 @@ import Register from "./pages/Registration";
 import Login from "./pages/Login";
 import HomeLogged from "./pages/HomeLogged";
 import Home from "./pages/Home";
+import Driverhome from "./pages/Driverhome";
+import Customerhome from "./pages/Customerhome";
+import Footer from "./components/footer";
+
 
 const App = () => {
-    const [view, setView] = useState("customer"); // Default to customer view
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(null); // Simulate logged-in user
+    const [view, setView] = useState("customer"); // Default to Customer view
 
-    // Simulate user login by checking localStorage
-    useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        }
-    }, []);
 
-    const handleViewSwitch = (newView) => {
-        setView(newView);
-    };
+
+
 
     const handleLogout = () => {
         localStorage.removeItem("user");
@@ -35,18 +31,17 @@ const App = () => {
         window.location.reload(); // Refresh the page after login to reflect the changes
     };
 
+    // Switch between driver and customer views
+    const handleSwitchView = (newView) => {
+        setView(newView); // Update view to Driver or Customer
+    };
+
     return (
         <Router>
             <div>
-                {/* Navbar is shown only if the user is logged in */}
-                {user && (
-                    <Navbar
-                        user={user}
-                        onLogout={handleLogout}
-                        onViewSwitch={handleViewSwitch}
-                        isDriver={view === "driver"}
-                    />
-                )}
+                
+
+
 
                 <Routes>
                     {/* Public routes */}
@@ -54,14 +49,13 @@ const App = () => {
                     <Route path="/home" element={<Home />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/login" element={<Login onLogin={handleLogin} />} />
+                    <Route path="/driverhome" element={<Driverhome />} />
+                    <Route path="/customerhome" element={<Customerhome />} />
+                    <Route path="/navbar" element={<Navbar />} />
+                    <Route path="/footer" element={<Footer />} />
 
-                    {/* HomeLogged is protected and only visible after login */}
-                    {user && (
-                        <Route
-                            path="/homelogged"
-                            element={<HomeLogged view={view} user={user} />}
-                        />
-                    )}
+
+                    
                 </Routes>
             </div>
         </Router>
