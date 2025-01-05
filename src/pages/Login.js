@@ -21,7 +21,7 @@ function Login() {
                 setUser(user); // Set the user state
 
                 // Navigate and then refresh the page
-                navigate("/Driverhome");
+                navigate("/customerhome");
                 setTimeout(() => {
                     window.location.reload(); // Refresh the page to reflect new state
                 }, 0);

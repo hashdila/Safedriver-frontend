@@ -8,6 +8,8 @@ import Home from "./pages/Home";
 import Driverhome from "./pages/Driverhome";
 import Customerhome from "./pages/Customerhome";
 import Footer from "./components/footer";
+import DriverDetails from "./pages/DriverDetails";
+
 
 
 const App = () => {
@@ -39,7 +41,7 @@ const App = () => {
     return (
         <Router>
             <div>
-                
+
 
 
 
@@ -53,6 +55,7 @@ const App = () => {
                     <Route path="/customerhome" element={<Customerhome />} />
                     <Route path="/navbar" element={<Navbar />} />
                     <Route path="/footer" element={<Footer />} />
+                    <Route path="/DriverDetails" element={<DriverDetails />} />
 
 
                     

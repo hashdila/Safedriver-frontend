@@ -1,14 +1,28 @@
-import React, { useState } from "react"; // Import useState
+import React, {useEffect, useState} from "react"; // Import useState
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import Navbar from "../components/navbar";  // If Navbar is being used
 import Footer from "../components/footer";  // If Footer is being used
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 
 function Home() {
     const navigate = useNavigate();
+    const [locations, setLocations] = useState([]);
 
     const handleSwitchToRegister = () => {
         navigate("/login"); // Navigate to Login page (or Register if needed)
     };
+
+    useEffect(() => {
+        fetch("http://localhost:8080/api/user/all-locations")
+            .then((response) => response.json())
+            .then((data) => setLocations(data))
+            .catch((error) => console.error("Error fetching locations:", error));
+    }, []);
+
+
+
+
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -28,12 +42,19 @@ function Home() {
             {/* Main Content */}
             <main className="flex flex-col items-center mt-6 px-4">
                 {/* Map Section */}
-                <div className="w-full max-w-4xl bg-white shadow-md rounded-lg p-6 mb-6">
-                    <h2 className="text-xl font-semibold mb-4">Map</h2>
-                    <div className="h-64 bg-gray-200 flex items-center justify-center rounded-md">
-                        <p className="text-gray-500">Map Placeholder</p>
-                    </div>
-                </div>
+                <MapContainer
+                    center={[7.8731, 80.7718]} // Default center
+                    zoom={7}
+                    style={{ height: "400px", width: "100%" }}
+                >
+                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                    {locations.map((loc, index) => (
+                        <Marker
+                            key={index}
+                            position={[loc.latitude, loc.longitude]}
+                        />
+                    ))}
+                </MapContainer>
 
                 {/* Terms and Conditions Section */}
                 <div className="w-full max-w-4xl bg-white shadow-md rounded-lg p-6">
