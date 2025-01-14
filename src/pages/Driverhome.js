@@ -39,6 +39,7 @@ const Driverhome = () => {
         }
     }, []);
 
+
     useEffect(() => {
         if (user && user.email && view === "driver") {
             fetch("http://localhost:8080/api/driver-details")
@@ -90,27 +91,50 @@ const Driverhome = () => {
     return (
         <div>
             <Navbar />
-            <div className="p-4">
-                <div>
-                    <h2 className="text-xl font-bold">Driver Dashboard</h2>
+            <div className="container mx-auto px-4 py-8">
+                <h2 className="text-2xl font-bold text-center mb-6">Driver Dashboard</h2>
+                <div className="bg-white shadow-md rounded-lg p-6">
                     {driverDetails && driverDetails.isVerified ? (
-                        <p>Your identification has been verified.</p>
+                        <div className="text-center">
+                            <p className="text-lg font-medium text-green-600">
+                                Your identification has been verified.
+                            </p>
+                        </div>
                     ) : (
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={handleSubmit} className="space-y-6">
                             <div>
-                                <label>Upload Front Side of License:</label>
-                                <input type="file" name="frontImage" onChange={handleFileChange} required />
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Upload Front Side of License:
+                                </label>
+                                <input
+                                    type="file"
+                                    name="frontImage"
+                                    onChange={handleFileChange}
+                                    required
+                                    className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer focus:ring-blue-500 focus:border-blue-500"
+                                />
                             </div>
                             <div>
-                                <label>Upload Back Side of License:</label>
-                                <input type="file" name="backImage" onChange={handleFileChange} required />
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Upload Back Side of License:
+                                </label>
+                                <input
+                                    type="file"
+                                    name="backImage"
+                                    onChange={handleFileChange}
+                                    required
+                                    className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer focus:ring-blue-500 focus:border-blue-500"
+                                />
                             </div>
                             <div className="my-4">
-                                <h3>Select Your Location on the Map:</h3>
+                                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                                    Select Your Location on the Map:
+                                </h3>
                                 <MapContainer
-                                    center={[location.latitude || 7.8731, location.longitude || 80.7718]} // Default location
+                                    center={[location.latitude || 7.8731, location.longitude || 80.7718]}
                                     zoom={7}
                                     style={{ height: "300px", width: "100%" }}
+                                    className="rounded-lg shadow-md"
                                 >
                                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                                     <LocationPicker setLocation={setLocation} />
@@ -119,12 +143,15 @@ const Driverhome = () => {
                                     )}
                                 </MapContainer>
                                 {location.latitude && location.longitude && (
-                                    <p>
+                                    <p className="text-sm text-gray-600 mt-2">
                                         Selected Location: {location.latitude}, {location.longitude}
                                     </p>
                                 )}
                             </div>
-                            <button type="submit" className="bg-blue-500 text-white p-2 rounded mt-2">
+                            <button
+                                type="submit"
+                                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg"
+                            >
                                 Submit Verification
                             </button>
                         </form>

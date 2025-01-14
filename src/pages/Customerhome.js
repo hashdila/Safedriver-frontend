@@ -11,10 +11,11 @@ const CustomerHome = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [locations, setLocations] = useState([]);
+    const [userLocation, setUserLocation] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Fetch the driver's details (replace the URL with your actual API endpoint)
+        // Fetch the driver's details
         fetch("http://localhost:8080/api/driver/details")
             .then((response) => {
                 if (!response.ok) {
@@ -34,10 +35,28 @@ const CustomerHome = () => {
     }, []);
 
     useEffect(() => {
+        // Fetch all locations
         fetch("http://localhost:8080/api/user/all-locations")
             .then((response) => response.json())
             .then((data) => setLocations(data))
             .catch((error) => console.error("Error fetching locations:", error));
+    }, []);
+
+    useEffect(() => {
+        // Get the user's current location
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    setUserLocation({
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                    });
+                },
+                (error) => {
+                    console.error("Error getting current location:", error);
+                }
+            );
+        }
     }, []);
 
     const fetchDriverDetails = async (latitude, longitude) => {
@@ -56,32 +75,31 @@ const CustomerHome = () => {
         }
     };
 
-
-
-    useEffect(() => {
-        fetch("http://localhost:8080/api/user/all-locations")
-            .then((response) => response.json())
-            .then((data) => setLocations(data))
-            .catch((error) => console.error("Error fetching locations:", error));
-    }, []);
-
     const handleMarkerClick = (latitude, longitude) => {
         navigate(`/driverdetails?latitude=${latitude}&longitude=${longitude}`);
     };
 
-
-
     return (
         <div>
             <Navbar />
-            <div className="p-4">No driver data available</div>
+            
 
             <MapContainer
-                center={[7.8731, 80.7718]} // Default center
+                center={userLocation ? [userLocation.latitude, userLocation.longitude] : [7.8731, 80.7718]}
                 zoom={7}
                 style={{ height: "400px", width: "100%" }}
             >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                {/* Current location marker */}
+                {userLocation && (
+                    <Marker position={[userLocation.latitude, userLocation.longitude]}>
+                        <Popup>
+                            <p><strong>Your Location</strong></p>
+                        </Popup>
+                    </Marker>
+                )}
+
+                {/* Driver locations */}
                 {locations.map((loc, index) => (
                     <Marker
                         key={index}
