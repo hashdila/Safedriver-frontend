@@ -47,7 +47,7 @@ function Home() {
                         <h2 className="text-xl font-semibold text-gray-800 mb-4">Explore Locations</h2>
                         <div className="rounded-lg shadow-md overflow-hidden">
                             <MapContainer
-                                center={[7.8731, 80.7718]}
+                                center={[35.01987504801111, 135.75531005859378]}
                                 zoom={7}
                                 style={{ height: "400px", width: "100%" }}
                             >
