@@ -131,7 +131,7 @@ const Driverhome = () => {
                                     Select Your Location on the Map:
                                 </h3>
                                 <MapContainer
-                                    center={[location.latitude || 7.8731, location.longitude || 80.7718]}
+                                    center={[location.latitude || 35.01987504801111, location.longitude || 135.75531005859378]}
                                     zoom={7}
                                     style={{ height: "300px", width: "100%" }}
                                     className="rounded-lg shadow-md"

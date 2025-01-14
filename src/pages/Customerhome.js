@@ -82,10 +82,10 @@ const CustomerHome = () => {
     return (
         <div>
             <Navbar />
-            
+
 
             <MapContainer
-                center={userLocation ? [userLocation.latitude, userLocation.longitude] : [7.8731, 80.7718]}
+                center={userLocation ? [userLocation.latitude, userLocation.longitude] : [35.01987504801111, 135.75531005859378]}
                 zoom={7}
                 style={{ height: "400px", width: "100%" }}
             >
